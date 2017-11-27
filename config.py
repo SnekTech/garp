@@ -14,6 +14,8 @@ class Config:
     GARP_MAIL_SENDER = 'GARP Admin <2654525303@qq.com>'
     # FLASKY_ADMIN = os.environ.get('FLASKY_ADMIN')
     GARP_ADMIN = os.environ.get('GARP_ADMIN') or '15087186168'
+    GARP_KEY = '0c6e736391492cabc25a220734f5f03e'
+    PRICE_PER_KM = 2
 
     @staticmethod
     def init_app(app):
@@ -31,18 +33,18 @@ class DevelopmentConfig(Config):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or '2654525303@qq.com'
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'bcubvkliojieeadb'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'mysql://root:@localhost:3306/garp?charset=utf8mb4'
+                              'mysql://root:123@localhost:3306/garp?charset=utf8mb4'
 
 
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get('TEST_DATABASE_URL') or \
-                              'mysql://root:@localhost:3306/garp?charset=utf8mb4'
+                              'mysql://root:123@localhost:3306/garp?charset=utf8mb4'
 
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'mysql://root:@localhost:3306/garp?charset=utf8mb4'
+                              'mysql://root:123@localhost:3306/garp?charset=utf8mb4'
 
 config = {
     'development': DevelopmentConfig,
