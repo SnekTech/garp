@@ -53,9 +53,11 @@ def passenger_login():
     phone_number = request.json.get('phone_number')
     password = request.json.get('password')
     passenger = Passenger.query.filter_by(phone_number=phone_number).first()
+    if not passenger:
+        return unauthorized('Invalid phone_number or password.')
     token = passenger.generate_auth_token(3600)
     token = bytes.decode(token)
-    if passenger is not None and passenger.verify_password(password):
+    if passenger.verify_password(password):
         login_user(passenger)
         response = jsonify({'message': 'Successful login.',
                             'passenger_id': passenger.id,
@@ -71,9 +73,11 @@ def driver_login():
     phone_number = request.json.get('phone_number')
     password = request.json.get('password')
     driver = Driver.query.filter_by(phone_number=phone_number).first()
+    if not driver:
+        return unauthorized('Invalid phone_number or password.')
     token = driver.generate_auth_token(3600)
     token = bytes.decode(token)
-    if driver is not None and driver.verify_password(password):
+    if driver.verify_password(password):
         login_user(driver)
         response = jsonify({'message': 'Successful login.',
                             'driver_id': driver.id,
