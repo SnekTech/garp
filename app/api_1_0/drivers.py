@@ -17,7 +17,7 @@ def get_driver(driver_id):
 def driver_location(driver_id):
     driver = Driver.query.filter_by(id=driver_id).first()
     if not driver:
-        return not_found('Passenger not found.')
+        return not_found('Driver not found.')
     if request.method == 'GET':
         response = jsonify({'driver_id': driver.id,
                             'location': driver.location})
@@ -43,5 +43,5 @@ def driver_check(driver_id):
                         'current_aiming_passenger_id': passenger.id}), 200
     elif driver.final_destination:
         return jsonify({'status': 'heading',
-                        'destination': driver.final_destination})
+                        'destination': driver.final_destination}), 200
     return not_found('No requests yet.')

@@ -228,7 +228,7 @@ class Order(db.Model):
     driver_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
     begin_location = db.Column(db.String(30))
     end_location = db.Column(db.String(30))
-    mileage = db.Column(db.Float)
+    distance = db.Column(db.Float)
     price = db.Column(db.Float)
 
     finished = db.Column(db.Boolean, default=False)
@@ -251,9 +251,9 @@ class Order(db.Model):
         driver_id = json_post.get('driver_id')
         begin_location = json_post.get('begin_location')
         end_location = json_post.get('end_location')
-        mileage = json_post.get('mileage')
-        price = mileage * current_app.config['PRICE_PER_KM']
+        distance = json_post.get('distance')
+        price = distance * current_app.config['PRICE_PER_KM']
 
         return Order(passenger_id=passenger_id, driver_id=driver_id,
                      begin_location=begin_location, end_location=end_location,
-                     mileage=mileage, price=price)
+                     distance=distance, price=price)
