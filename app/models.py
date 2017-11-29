@@ -217,6 +217,7 @@ class Driver(UserMixin, db.Model):
             'balance': self.balance,
             'mileage': self.total_mileage,
             'location': self.location,
+            'available': self.available
         }
         return json_driver
 

@@ -45,3 +45,13 @@ def driver_check(driver_id):
         return jsonify({'status': 'heading',
                         'destination': driver.final_destination}), 200
     return not_found('No requests yet.')
+
+
+@api.route('/enable_drivers', methods=['POST'])
+def enable_driver():
+    drivers = Driver.query.all()
+    for driver in drivers:
+        driver.available = True
+        db.session.add(driver)
+    db.session.commit()
+    return jsonify({'available': 'All drivers are available.'}), 200
