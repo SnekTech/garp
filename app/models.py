@@ -241,7 +241,7 @@ class Order(db.Model):
             'driver_id': self.driver_id,
             'begin_location': self.begin_location,
             'end_location': self.end_location,
-            'mileage': self.mileage,
+            'distance': self.distance,
             'price': self.price
         }
         return json_order
