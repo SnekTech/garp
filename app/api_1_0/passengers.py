@@ -30,15 +30,15 @@ def passenger_location(passenger_id):
         db.session.add(passenger)
         response = jsonify({'passenger_id': passenger.id,
                             'location': passenger.location})
-        response.status_code = 201
+        response.status_code = 200
         return response
 
 
-@api.route('/ride_request/<int:passenger_id>')
+@api.route('/ride_request/<int:passenger_id>', methods=['POST'])
 def ride_request(passenger_id):
     passenger = Passenger.query.get_or_404(passenger_id)
     driver = utils.choose_driver(passenger)
     if driver:
-        return jsonify(driver.to_json()), 200
+        return jsonify({'driver_id': driver.id}), 200
     else:
         return not_found('No drivers available.')

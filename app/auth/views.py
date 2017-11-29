@@ -24,7 +24,7 @@ def passenger_register():
     db.session.add(passenger)
     db.session.commit()
     response = jsonify({'message': 'Successful registration.'})
-    response.status_code = 201
+    response.status_code = 200
     return response
 
 
@@ -44,7 +44,7 @@ def driver_register():
     db.session.add(driver)
     db.session.commit()
     response = jsonify({'message': 'Successful registration.'})
-    response.status_code = 201
+    response.status_code = 200
     return response
 
 

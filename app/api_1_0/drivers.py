@@ -29,7 +29,7 @@ def driver_location(driver_id):
         db.session.add(driver)
         response = jsonify({'driver_id': driver.id,
                             'location': driver.location})
-        response.status_code = 201
+        response.status_code = 200
         return response
 
 
