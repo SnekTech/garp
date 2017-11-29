@@ -15,7 +15,6 @@ def get_passenger(passenger_id):
 
 # 获取和更新单个乘客的坐标
 @api.route('/passenger_location/<int:passenger_id>', methods=['GET', 'POST'])
-@auth.login_required
 def passenger_location(passenger_id):
     passenger = Passenger.query.filter_by(id=passenger_id).first()
     if not passenger:
