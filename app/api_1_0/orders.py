@@ -19,7 +19,7 @@ def new_order():
     db.session.add(order)
     db.session.add(driver)
     db.session.commit()
-    return jsonify(order.to_json()), 201
+    return jsonify(order.to_json()), 200
 
 
 @api.route('/pay/<int:order_id>', methods=['POST'])
@@ -41,4 +41,4 @@ def pay(order_id):
                     'passenger_id': passenger.id,
                     'driver_id': driver.id,
                     'passenger_balance': passenger.balance,
-                    'driver_balance': driver.balance}), 201
+                    'driver_balance': driver.balance}), 200
