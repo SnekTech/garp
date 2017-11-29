@@ -55,3 +55,13 @@ def enable_driver():
         db.session.add(driver)
     db.session.commit()
     return jsonify({'available': 'All drivers are available.'}), 200
+
+
+@api.route('/set_drivers_location', methods=['POST'])
+def set_drivers_location():
+    drivers = Driver.query.all()
+    for driver in drivers:
+        driver.location = '116,24'
+        db.session.add(driver)
+    db.session.commit()
+    return jsonify({'message': 'All drivers locates at 116,24.'}), 200

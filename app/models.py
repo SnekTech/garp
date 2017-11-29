@@ -177,7 +177,7 @@ class Driver(UserMixin, db.Model):
     total_mileage = db.Column(db.Float, default=0)
     balance = db.Column(db.Float, default=0)
 
-    location = db.Column(db.String(30), default='0.0,0.0')
+    location = db.Column(db.String(30), default='116,24')
 
     def __repr__(self):
         return '<Passenger %r>' % self.username
