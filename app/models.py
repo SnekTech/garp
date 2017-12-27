@@ -3,6 +3,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin, AnonymousUserMixin
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
+import os
+import pickle
 from app.exceptions import ValidationError
 
 
@@ -107,13 +109,13 @@ class Passenger(UserMixin, db.Model):
     is_confirmed = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    orders = db.relationship('Order', backref='passenger')
+    orders = db.relationship('Order', backref='passenger', lazy='dynamic')
     driver = db.relationship('Driver', backref='current_aiming_passenger')
 
     # 余额
     balance = db.Column(db.Float, default=1000)
 
-    location = db.Column(db.String(30), default='0.0,0.0')
+    location = db.Column(db.String(30), default='116,24')
 
     def __repr__(self):
         return '<Passenger %r>' % self.username
@@ -163,16 +165,21 @@ class Driver(UserMixin, db.Model):
     is_confirmed = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    orders = db.relationship('Order', backref='driver')
+    orders = db.relationship('Order', backref='driver', lazy='dynamic')
 
     # 余额
     balance = db.Column(db.Float, default=1000)
 
     car_id = db.Column(db.String(10), unique=True, index=True)
     remaining_seats = db.Column(db.Integer, default=4)
-    available = db.Column(db.Boolean, default=True)
+    # available = db.Column(db.Boolean, default=True)
+    heading = db.Column(db.Boolean, default=False)
+    picking = db.Column(db.Boolean, default=False)
     current_aiming_passenger_id = db.Column(db.Integer, db.ForeignKey('passengers.id'), default=None)
     final_destination = db.Column(db.String(30), default=None)
+
+    passengers = []
+    destinations = []
 
     total_mileage = db.Column(db.Float, default=0)
     balance = db.Column(db.Float, default=0)
@@ -180,7 +187,7 @@ class Driver(UserMixin, db.Model):
     location = db.Column(db.String(30), default='116,24')
 
     def __repr__(self):
-        return '<Passenger %r>' % self.username
+        return '<Driver %r>' % self.username
 
     @property
     def password(self):
@@ -207,17 +214,28 @@ class Driver(UserMixin, db.Model):
         return Driver.query.get(data['id'])
 
     def to_json(self):
+        # 反序列化driver的passengers和destinations对象
+        with open(os.path.join(current_app.config['DRIVER_OBJ'], 'driver_{}_passengers.pkl'.format(self.id)),
+                  'rb') as f:
+            self.passengers = pickle.load(f)
+        with open(
+                os.path.join(current_app.config['DRIVER_OBJ'], 'driver_{}_destinations.pkl'.format(self.id)),
+                'rb') as f:
+            self.destinations = pickle.load(f)
         json_driver = {
             'driver_id': self.id,
             'username': self.username,
             'phone_number': self.phone_number,
             'is_confirmed': self.is_confirmed,
             'car_id': self.car_id,
+            'picking': self.picking,
+            'heading': self.heading,
+            'destinations': self.destinations,
+            'passengers': self.passengers,
             'remaining_seats': self.remaining_seats,
             'balance': self.balance,
             'mileage': self.total_mileage,
             'location': self.location,
-            'available': self.available
         }
         return json_driver
 
@@ -229,8 +247,10 @@ class Order(db.Model):
     driver_id = db.Column(db.Integer, db.ForeignKey('drivers.id'))
     begin_location = db.Column(db.String(30))
     end_location = db.Column(db.String(30))
-    distance = db.Column(db.Float)
-    price = db.Column(db.Float)
+    temp_distance = db.Column(db.Float, default=0)
+    distance = db.Column(db.Float, default=0)
+    temp_price = db.Column(db.Float, default=0)
+    price = db.Column(db.Float, default=0)
 
     finished = db.Column(db.Boolean, default=False)
 
@@ -242,7 +262,8 @@ class Order(db.Model):
             'begin_location': self.begin_location,
             'end_location': self.end_location,
             'distance': self.distance,
-            'price': self.price
+            'price': self.price,
+            'finished': self.finished
         }
         return json_order
 
@@ -252,9 +273,6 @@ class Order(db.Model):
         driver_id = json_post.get('driver_id')
         begin_location = json_post.get('begin_location')
         end_location = json_post.get('end_location')
-        distance = json_post.get('distance')
-        price = distance * current_app.config['PRICE_PER_KM']
 
         return Order(passenger_id=passenger_id, driver_id=driver_id,
-                     begin_location=begin_location, end_location=end_location,
-                     distance=distance, price=price)
+                     begin_location=begin_location, end_location=end_location)

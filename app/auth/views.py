@@ -1,10 +1,13 @@
 from . import auth
 from .errors import not_found
 from .errors import unauthorized, bad_request
-from flask import request, jsonify
+from flask import request, jsonify, current_app
 from flask_login import login_user, logout_user
 from app import db
 from app.models import User, Passenger, Driver
+import pickle
+import os
+from config import basedir
 from ..api_1_0.authentication import auth as auth_head
 
 
@@ -43,6 +46,13 @@ def driver_register():
     driver = Driver(phone_number=phone_number, username=username, password=password, is_confirmed=is_confirmed)
     db.session.add(driver)
     db.session.commit()
+    driver.passengers = []
+    driver.destinations = []
+    with open(os.path.join(current_app.config['DRIVER_OBJ'], 'driver_{}_passengers.pkl'.format(driver.id)), 'wb') as f:
+        pickle.dump(driver.passengers, f)
+    with open(os.path.join(current_app.config['DRIVER_OBJ'], 'driver_{}_destinations.pkl'.format(driver.id)),
+              'wb') as f:
+        pickle.dump(driver.destinations, f)
     response = jsonify({'message': 'Successful registration.'})
     response.status_code = 200
     return response
@@ -78,6 +88,14 @@ def driver_login():
     token = driver.generate_auth_token(3600)
     token = bytes.decode(token)
     if driver.verify_password(password):
+        driver.passengers = []
+        driver.destinations = []
+        with open(os.path.join(current_app.config['DRIVER_OBJ'], 'driver_{}_passengers.pkl'.format(driver.id)), 'wb') as f:
+            pickle.dump(driver.passengers, f)
+        with open(os.path.join(current_app.config['DRIVER_OBJ'], 'driver_{}_destinations.pkl'.format(driver.id)), 'wb') as f:
+            pickle.dump(driver.destinations, f)
+        # db.session.add(driver)
+        # db.session.commit()
         login_user(driver)
         response = jsonify({'message': 'Successful login.',
                             'driver_id': driver.id,

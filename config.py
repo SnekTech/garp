@@ -7,7 +7,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
-    UPLOADED_PHOTOS_DEST = basedir
+    DRIVER_OBJ = os.path.join(basedir, 'driver_obj')
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     GARP_MAIL_SUBJECT_PREFIX = '[GARP]'
@@ -33,7 +33,7 @@ class DevelopmentConfig(Config):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME') or '2654525303@qq.com'
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD') or 'bcubvkliojieeadb'
     SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_DATABASE_URL') or \
-                              'mysql://root:123@localhost:3306/garp?charset=utf8mb4'
+                              'sqlite:///' + os.path.join(basedir, 'data.sqlite')
 
 
 class TestingConfig(Config):
