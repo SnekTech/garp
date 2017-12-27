@@ -127,7 +127,7 @@ def enable_driver():
     db.session.commit()
     order1 = Order(begin_location=passenger1.location, end_location='102.855005,24.825939', passenger_id=passenger1.id,
                    finished=False)
-    order2 = Order(begin_location=passenger2.location, end_location='102.801174,24.975836', passenger_id=passenger2.id,
+    order2 = Order(begin_location=passenger2.location, end_location='102.849703,24.826861', passenger_id=passenger2.id,
                    finished=False)
 
     db.session.add(order1)
