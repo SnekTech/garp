@@ -10,13 +10,12 @@ from config import basedir
 
 # 根据驾驶导航获取两点之间的距离（以用时最短为准）
 def get_distance(origin, destination):
-    origin_url = 'http://restapi.amap.com/v3/direction/walking'
+    origin_url = 'http://restapi.amap.com/v3/direction/driving'
     params = {'key': current_app.config['GARP_KEY'],
               'origin': origin,
               'destination': destination,
               }
     response = requests.get(origin_url, params=params)
-    print(origin, destination)
     print(response.json())
     distance = response.json().get('route').get('paths')[0].get('distance')
     distance = int(distance)
@@ -111,7 +110,7 @@ def choose_driver(passenger):
                         # 当计算到第一个乘客的下车点时停止累加
                         break
                 print('{} - {} = {}'.format(p_distances[i], origin_distance, p_distances[i] - origin_distance))
-                if p_distances[i] - origin_distance <= 2000:
+                if p_distances[i] - origin_distance <= 1000:
                     # p_destinations.pop(i)
                     remaining_indexes.append(i)
             new_p_destinations = []
